@@ -12,7 +12,17 @@ var pm = new PlayMusic();
 var config = JSON.parse(fs.readFileSync("config.json"));
 
 pm.login({email: config.email, password: config.password}, function(err, resp) {
-    console.log(err, resp);
+    if (err) return console.log("error", err);
+    console.log("res", resp);
+
+    // Testing log out functions
+    setTimeout(function () {
+        pm.logout(function(err, resp){
+            if (err) return console.log("error", err);
+            console.log("Logged Status", resp);
+            console.log("pm.isAuthenticated", pm.isAuthenticated);            
+        });
+    }, 2000);
 });
 
 pm.init(config, function(err) {
@@ -27,18 +37,18 @@ pm.init(config, function(err) {
     //     });
     // });
 
-    pm.search("bastille lost fire", 5, function(err, data) {
-        if(err) return console.error(err);
+    // pm.search("bastille lost fire", 5, function(err, data) {
+    //     if(err) return console.error(err);
 
-        var song = data.entries.sort(function(a, b) {
-            return a.score < b.score;
-        }).shift();
-        console.log(util.inspect(song, {depth: 10}));
-        pm.getStreamUrl(song.track.nid, function(err, streamUrl) {
-            if(err) console.error(err);
-            console.log(streamUrl);
-        });
-    });
+    //     var song = data.entries.sort(function(a, b) {
+    //         return a.score < b.score;
+    //     }).shift();
+    //     console.log(util.inspect(song, {depth: 10}));
+    //     pm.getStreamUrl(song.track.nid, function(err, streamUrl) {
+    //         if(err) console.error(err);
+    //         console.log(streamUrl);
+    //     });
+    // });
 
     //
     // pm.getPlayLists(function(err, data) {

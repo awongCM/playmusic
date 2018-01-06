@@ -49,6 +49,8 @@ PlayMusic.prototype._mobileURL = 'https://android.clients.google.com/music/';
 PlayMusic.prototype._accountURL = 'https://www.google.com/accounts/';
 PlayMusic.prototype._authURL = 'https://android.clients.google.com/auth';
 
+PlayMusic.prototype._isAuthenticated = false;
+
 PlayMusic.prototype.request = function(options, callback) {
     var opt = url.parse(options.url);
     opt.headers = {};
@@ -209,10 +211,30 @@ PlayMusic.prototype.login =  function (opt, callback) {
         data: querystring.stringify(data)
     },  function(err, data) {
         var response = pmUtil.parseKeyValues(data);
+        that._isAuthenticated = err ? false : true;
         callback(err, err ? null : {androidId: opt.androidId, masterToken: response.Token});
     });
 };
 
+/**
+ * Clears local user authentication token, returns an empty token 
+ *
+ * @param callback function(err, user token) - success callback
+ */
+PlayMusic.prototype.logout = function(callback){
+    var err = (this._token === null && !this._isAuthenticated) ? 
+                new Error('User already logged out') : null;
+    if(!err) { this._token = null; this.isAuthenticated = false; }
+    callback(err, {token: this._token});
+};
+
+/**
+ * Returns user authentication status
+ *
+ */
+PlayMusic.prototype.isAuthenticated = function() {
+    return this._isAuthenticated;
+};
 
 /**
  * Returns settings / device ids authorized for account.
